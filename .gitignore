@@ -1,0 +1,17 @@
+# Ignora todas las carpetas target de cualquier subdirectorio
+**/target/
+
+# Archivos específicos de Quarkus/Maven
+.quarkus/
+**/pom.xml.tag
+**/pom.xml.releaseBackup
+**/pom.xml.versionsBackup
+**/release.properties
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Sistema
+.DS_Store
