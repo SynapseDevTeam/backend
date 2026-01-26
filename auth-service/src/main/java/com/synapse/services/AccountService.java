@@ -1,5 +1,7 @@
 package com.synapse.services;
 
+import java.util.UUID;
+
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import com.synapse.model.Account;
@@ -55,13 +57,14 @@ public class AccountService {
     }
     
     @Transactional
-    public void cambiarContrasenia(Long id, String old, String next){
-        Object idTok = jwt.getClaim("accountId");
+    public void cambiarContrasenia(UUID id, String old, String next){
+        String idTok = jwt.getClaim("accountId");
 
-        if(idTok == null || !id.equals(Long.valueOf(idTok.toString())))
+        if(idTok == null || !id.equals(UUID.fromString(idTok)))
             throw new WebApplicationException("No puedes cambiar la contrasenia de otra persona", 403);
 
         Account acc = accRepo.findById(id);
+        
         if(acc == null || !passUtils.verificarPassword(old, acc.getPassword()))
             throw new WebApplicationException("Contraseña actual incorrecta", 400);
 

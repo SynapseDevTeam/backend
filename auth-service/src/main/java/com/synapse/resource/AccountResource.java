@@ -1,6 +1,7 @@
 package com.synapse.resource;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.synapse.dto.CambioDeContrasenia;
 import com.synapse.model.Account;
@@ -45,7 +46,7 @@ public class AccountResource {
     @PATCH
     @Path("/change-password/{id}")
     @Authenticated
-    public Response changePassword(@PathParam("id") Long id, @Valid CambioDeContrasenia data){
+    public Response changePassword(@PathParam("id") UUID id, @Valid CambioDeContrasenia data){
         accServ.cambiarContrasenia(id, data.oldPassword, data.newPassword);
         return Response.noContent().build();
     }
