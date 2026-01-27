@@ -14,4 +14,7 @@ public class AccountRepository implements PanacheRepositoryBase<Account, UUID>{
     public Optional<Account> findByEmail(String email) {
         return find("email", email).firstResultOptional();
     }
+    public Optional<Account> findByUsername(String username) {
+        return find("username", username).firstResultOptional();
+    } 
 }

@@ -36,6 +36,8 @@ public class AccountService {
 
         if(accRepo.findByEmail(eamilLimpio).isPresent()) 
             throw new WebApplicationException("Email ya en uso", 409);
+        if(accRepo.findByUsername(eamilLimpio).isPresent())
+            throw new WebApplicationException("Nombre de usuario ya en uso", 409);
 
 
         acc.setPassword(passUtils.hashPassword(acc.getPassword()));
