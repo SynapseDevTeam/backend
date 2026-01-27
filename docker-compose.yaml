@@ -13,6 +13,7 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 5s
@@ -41,5 +42,20 @@ services:
     volumes:
       - ./auth-service/src/main/resources/SynapseAuthKey.pem:/deployments/SynapseAuthKey.pem
 
+  catalog:
+    build:
+      context: ./catalog-service
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: catalog-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-catalog
+      QUARKUS_DATASOURCE_USERNAME: user
+      QUARKUS_DATASOURCE_PASSWORD: 1234
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
 volumes:
   db_data:

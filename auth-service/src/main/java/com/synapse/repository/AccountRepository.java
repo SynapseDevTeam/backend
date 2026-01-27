@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AccountRepository implements PanacheRepositoryBase<Account, UUID>{
+    
     public Optional<Account> findByEmail(String email) {
         return find("email", email).firstResultOptional();
     }
