@@ -1,6 +1,5 @@
-package main.java.com.synapse.main_service.config;
+package com.synapse.main_service.config;
 
-import java.beans.BeanProperty;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
