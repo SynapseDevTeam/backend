@@ -10,9 +10,10 @@ public class JwtUtils {
     public String generateToken(Account account){
 
         return Jwt.issuer("https://synapse-auth.com")
+                .subject(account.getId().toString())
                 .upn(account.getEmail())
-                .claim("accountId", account.getId())
                 .claim("username", account.getUsername())
+                .groups("USER") 
                 .expiresIn(2592000)
                 .sign();
     }
