@@ -34,4 +34,8 @@ public class Electrodomestico{
 
     @OneToMany(mappedBy = "electrodomestico", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Manual> manuales;
+
+    public List<Manual> getManuales() {
+        return manuales;
+    }
 }
