@@ -46,7 +46,7 @@ public class ManualService {
         Manual manual = new Manual();
         manual.setElectrodomestico(e);
         manual.setFileUrl(destPath.toString());
-        manual.setCustom(file.fileName());
+        manual.setCustom("USER");
 
         manRepo.persist(manual);
 
