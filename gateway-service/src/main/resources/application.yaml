@@ -18,3 +18,8 @@ spring:
             uri: http://localhost:8082
             predicates:
               - Path=/catalog/**
+          - id: manual-service
+            uri: http://localhost:8082
+            predicates:
+              - Path=/manuals/**
+              

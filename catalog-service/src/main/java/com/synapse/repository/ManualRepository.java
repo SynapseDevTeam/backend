@@ -9,5 +9,5 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ManualRepository implements PanacheRepositoryBase<Manual, UUID>{
-    
+
 }
