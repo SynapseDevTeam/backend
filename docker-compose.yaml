@@ -25,7 +25,7 @@ services:
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: auth-service
     ports:
-      - "8081:8080"
+      - "8081:8081"
     depends_on:
       db:
         condition: service_healthy # Espera a que el healthcheck de la DB sea positivo
