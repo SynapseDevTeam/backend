@@ -1,16 +1,12 @@
 package com.synapse.resource;
 
-import java.util.List;
 
 import com.synapse.dto.ElectrodomesticoDTO;
 import com.synapse.dto.PagedResponseDTO;
-import com.synapse.model.Electrodomestico;
-import com.synapse.repository.ElectrodomesticoRepository;
 import com.synapse.repository.ManualRepository;
 import com.synapse.service.ElectrodomesticoService;
 
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;

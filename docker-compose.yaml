@@ -72,6 +72,24 @@ services:
       QUARKUS_DATASOURCE_USERNAME: user
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+  home:
+    build:
+      context: ./home-service
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: home-service
+    expose:
+      - "8080"
+    networks:
+      - synapse-net
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-home
+      QUARKUS_DATASOURCE_USERNAME: user
+      QUARKUS_DATASOURCE_PASSWORD: 1234
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+
 volumes:
   db_data:
 
