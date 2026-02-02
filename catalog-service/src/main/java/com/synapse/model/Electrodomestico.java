@@ -3,6 +3,8 @@ package com.synapse.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +35,7 @@ public class Electrodomestico{
     private String categoria;
 
     @OneToMany(mappedBy = "electrodomestico", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Manual> manuales;
 
     public List<Manual> getManuales() {
