@@ -1,6 +1,7 @@
 package com.synapse.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.synapse.dto.ElectrodomesticoDTO;
@@ -15,12 +16,18 @@ import io.quarkus.panache.common.Sort;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class ElectrodomesticoService {
 
     @Inject
     ElectrodomesticoRepository elecRepo;
+
+    public Response getElecById(UUID id){
+        return elecRepo.findByIdOptional(id).map(item -> Response.ok(item).build()).orElse(Response.status(Response.Status.NOT_FOUND).build());
+    }
+
 
     public List<Electrodomestico> listarElectrodomesticos(){
         return elecRepo.listAll();

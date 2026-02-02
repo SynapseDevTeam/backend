@@ -13,7 +13,6 @@ public class JwtUtils {
                 .subject(account.getId().toString())
                 .upn(account.getEmail())
                 .claim("username", account.getUsername())
-                .claim("accountId", account.getId())
                 .groups("USER") 
                 .expiresIn(2592000)
                 .sign();

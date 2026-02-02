@@ -1,8 +1,11 @@
 package com.synapse.resource;
 
 
+import java.util.UUID;
+
 import com.synapse.dto.ElectrodomesticoDTO;
 import com.synapse.dto.PagedResponseDTO;
+import com.synapse.model.Electrodomestico;
 import com.synapse.repository.ManualRepository;
 import com.synapse.service.ElectrodomesticoService;
 
@@ -11,9 +14,11 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/catalog")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,4 +44,9 @@ public class CatalogResource {
         return electServ.findAdvanced(marca, modelo, categoria, sort, "asc", page, size);
     }
 
+    @GET
+    @Path("/{id}")
+    public Response getById(@PathParam("id") UUID id){
+        return electServ.getElecById(id);
+    }
 }
