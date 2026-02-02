@@ -88,7 +88,34 @@ services:
       QUARKUS_DATASOURCE_USERNAME: user
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
-
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: synapse-rabbitmq
+    ports:
+      - "5672:5672"   
+      - "15672:15672" 
+    networks:
+      - synapse-network
+  user:
+    build:
+      context: ./user-service
+      dockerfile: src/main/docker/Dockerfile.jvm
+    container_name: user-service
+    expose:
+      - "8080"
+    networks:
+      - synapse-net
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-home
+      QUARKUS_DATASOURCE_USERNAME: user
+      QUARKUS_DATASOURCE_PASSWORD: 1234
+      QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
 volumes:
   db_data:
 
