@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.synapse.dto.ElectrodomesticoDTO;
 import com.synapse.dto.PagedResponseDTO;
-import com.synapse.model.Electrodomestico;
 import com.synapse.repository.ManualRepository;
 import com.synapse.service.ElectrodomesticoService;
 
