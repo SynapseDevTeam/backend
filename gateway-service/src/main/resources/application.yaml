@@ -11,15 +11,15 @@ spring:
         webmvc:
           routes:
           - id: auth-routes
-            uri: http://localhost:8081
+            uri: http://localhost:8080
             predicates:
             - Path=/auth/**
           - id: catalog-service
-            uri: http://localhost:8082
+            uri: http://localhost:8080
             predicates:
               - Path=/catalog/**
           - id: manual-service
-            uri: http://localhost:8082
+            uri: http://localhost:8080
             predicates:
               - Path=/manuals/**
               

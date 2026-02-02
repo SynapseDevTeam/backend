@@ -3,14 +3,14 @@ services:
   db:
     image: mysql:8.3.0
     container_name: mysql-db
-    restart: "no"
     environment:
       MYSQL_ROOT_PASSWORD: "1234@abcd"
-      MYSQL_DATABASE: synapse-accounts
       MYSQL_USER: user
       MYSQL_PASSWORD: 1234
     ports:
       - "3306:3306"
+    networks:
+      - synapse-net
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,25 +18,36 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 5s
       retries: 10
-
+  gateway:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    networks:
+      - synapse-net
+    depends_on:
+      - auth
+      - catalog
   auth:
     build:
       context: ./auth-service
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: auth-service
-    ports:
-      - "8081:8081"
+    expose:
+      - "8080"
+    networks:
+      - synapse-net
     depends_on:
       db:
-        condition: service_healthy # Espera a que el healthcheck de la DB sea positivo
+        condition: service_healthy
     environment:
       QUARKUS_DATASOURCE_DB_KIND: mysql
-      # Importante: aquí usamos 'db' porque es el nombre del servicio en el compose
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-accounts
       QUARKUS_DATASOURCE_USERNAME: user
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
-      # Añadimos las rutas de las llaves que ya están dentro del JAR
       SMALLRYE_JWT_SIGN_KEY_LOCATION: SynapseAuthKey.pem
       SMALLRYE_JWT_VERIFY_KEY_LOCATION: publicSynapseAuthKey.pem
     volumes:
@@ -47,8 +58,10 @@ services:
       context: ./catalog-service
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: catalog-service
-    ports:
-      - "8082:8082"
+    expose:
+      - "8080"
+    networks:
+      - synapse-net
     volumes:
       - ./manuals_storage:/deployments/uploads
     depends_on:
@@ -61,3 +74,7 @@ services:
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
 volumes:
   db_data:
+
+networks:
+  synapse-net:
+    driver: bridge
