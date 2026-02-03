@@ -1,5 +1,6 @@
 package com.synapse.model;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -34,4 +35,6 @@ public class UserProfile {
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Subscription subscription;
+
+    public java.time.Instant craatedAt = Instant.now();
 }

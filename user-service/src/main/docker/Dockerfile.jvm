@@ -81,9 +81,11 @@
 # https://rh-openjdk.github.io/redhat-openjdk-containers/
 ###
 FROM maven:3.9.6-eclipse-temurin-21 AS build
-COPY pom.xml /project/
-COPY src /project/src
+
 WORKDIR /project
+COPY pom.xml .
+COPY src ./src
+
 RUN mvn package -DskipTests
 
 # Stage 2: Runtime

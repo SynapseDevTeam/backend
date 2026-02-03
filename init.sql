@@ -2,9 +2,11 @@
 CREATE DATABASE IF NOT EXISTS `synapse-accounts`;
 CREATE DATABASE IF NOT EXISTS `synapse-catalog`;
 CREATE DATABASE IF NOT EXISTS `synapse-home`;
+CREATE DATABASE IF NOT EXISTS `synapse-user`;
 
 GRANT ALL PRIVILEGES ON `synapse-catalog`.* TO 'user'@'%';
 GRANT ALL PRIVILEGES ON `synapse-accounts`.* TO 'user'@'%';
 GRANT ALL PRIVILEGES ON `synapse-home`.* TO 'user'@'%';
+GRANT ALL PRIVILEGES ON `synapse-user`.* TO 'user'@'%';
 -- Aplicamos cambios
 FLUSH PRIVILEGES;

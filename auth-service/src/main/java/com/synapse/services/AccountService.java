@@ -4,11 +4,14 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import com.synapse.dto.UserCreatedEvent;
 import com.synapse.model.Account;
 import com.synapse.repository.AccountRepository;
 import com.synapse.util.JwtUtils;
 import com.synapse.util.PasswordUtils;
 
+import io.smallrye.reactive.messaging.annotations.Channel;
+import io.smallrye.reactive.messaging.annotations.Emitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -29,6 +32,10 @@ public class AccountService {
     @Inject
     JsonWebToken jwt; //Auto inyecta el Token que venga con cada peticion
 
+    @Inject
+    @Channel("user-created")
+    Emitter<UserCreatedEvent> userEmitter;
+
     @Transactional
     public Account register(Account acc){
         String eamilLimpio = acc.getEmail().trim().toLowerCase();
@@ -44,6 +51,11 @@ public class AccountService {
         acc.setEmail(eamilLimpio);
 
         accRepo.persist(acc);
+
+        userEmitter.send(UserCreatedEvent.builder()
+        .userId(acc.getId())
+        .build());
+
         return acc;
     }
 

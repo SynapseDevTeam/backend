@@ -49,6 +49,8 @@ services:
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
       SMALLRYE_JWT_SIGN_KEY_LOCATION: SynapseAuthKey.pem
       SMALLRYE_JWT_VERIFY_KEY_LOCATION: publicSynapseAuthKey.pem
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     volumes:
       - ./auth-service/src/main/resources/SynapseAuthKey.pem:/deployments/SynapseAuthKey.pem
 
@@ -95,7 +97,7 @@ services:
       - "5672:5672"   
       - "15672:15672" 
     networks:
-      - synapse-network
+      - synapse-net
   user:
     build:
       context: ./user-service
@@ -106,7 +108,7 @@ services:
     networks:
       - synapse-net
     environment:
-      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-home
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-user
       QUARKUS_DATASOURCE_USERNAME: user
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
