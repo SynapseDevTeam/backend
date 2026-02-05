@@ -85,11 +85,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
     environment:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db:3306/synapse-home
       QUARKUS_DATASOURCE_USERNAME: user
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
+      RABBITMQ_HOST: rabbitmq
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: synapse-rabbitmq

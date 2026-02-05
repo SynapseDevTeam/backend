@@ -1,10 +1,12 @@
 package com.synapse.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ import lombok.*;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "home")
 public class Home {
     
@@ -27,6 +30,6 @@ public class Home {
 
     private UUID ownerId;
 
-    @OneToMany(mappedBy = "home", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserDevice> devices;
+    @OneToMany(mappedBy = "home", cascade = CascadeType.ALL, fetch = FetchType.EAGER ,orphanRemoval = true)
+    private List<UserDevice> devices = new ArrayList<>();
 }

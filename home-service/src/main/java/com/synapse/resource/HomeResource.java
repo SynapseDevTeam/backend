@@ -13,8 +13,11 @@ import com.synapse.service.HomeService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -35,10 +38,7 @@ public class HomeResource {
     @POST
     public Response createHome(HomeRequest request){
         UUID ownerId = UUID.fromString(jwt.getSubject());
-        Home home = new Home();
-        home.setName(request.getName());
-
-        Home created = homeServ.createHome(home, ownerId);
+        Home created = homeServ.createHome(request.getName(), ownerId);
         return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
@@ -53,11 +53,61 @@ public class HomeResource {
     public Response addDevice(@PathParam("homeId") UUID homeId, DeviceRequest request) {
         UUID ownerId = UUID.fromString(jwt.getSubject());
         
-        UserDevice device = new UserDevice();
-        device.setCustomName(request.getCustomName());
-        device.setCatalogId(request.getCatalogProductId());
-
-        UserDevice created = homeServ.addDeviceToHome(homeId, device, ownerId);
+        UserDevice created = homeServ.addDeviceToHome(
+            homeId, 
+            request.getCustomName(), 
+            request.getCatalogProductId(), 
+            ownerId
+        );
+        
         return Response.status(Response.Status.CREATED).entity(created).build();
+    }
+
+    @GET
+    @Path("/{homeId}")
+    public Response getHomeDetails(@PathParam("homeId") UUID homeId) {
+    UUID ownerId = UUID.fromString(jwt.getSubject());
+    return Response.ok(homeServ.getHomeById(homeId, ownerId)).build();
+}
+
+    @GET
+    @Path("/{homeId}/devices")
+    public Response getHomeDevices(@PathParam("homeId") UUID homeId){
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+        return Response.ok(homeServ.getDevicesByHome(homeId, ownerId)).build();
+    }
+
+    @DELETE
+    @Path("/{homeId}")
+    public Response deleteHome(@PathParam("homeId") UUID homeId){
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+    
+        homeServ.deleteHome(homeId, ownerId);
+    
+        return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path("/{homeId}")
+    public Response updateHomeName(@PathParam("homeId") UUID homeId, HomeRequest request) {
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+        Home updated = homeServ.updateHomeName(homeId, request.getName(), ownerId);
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{homeId}/devices/{deviceId}")
+    public Response removeDevice(@PathParam("homeId") UUID homeId, @PathParam("deviceId") UUID deviceId) {
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+        homeServ.removeDeviceFromHome(homeId, deviceId, ownerId);
+        return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path("/devices/{deviceId}/transfer/{targetHomeId}")
+    public Response transferDevice(@PathParam("deviceId") UUID deviceId, @PathParam("targetHomeId") UUID targetHomeId) {
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+        UserDevice moved = homeServ.transferDevice(deviceId, targetHomeId, ownerId);
+        return Response.ok(moved).build();
     }
 }

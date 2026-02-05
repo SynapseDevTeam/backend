@@ -16,6 +16,7 @@ import io.quarkus.panache.common.Sort;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
@@ -24,8 +25,9 @@ public class ElectrodomesticoService {
     @Inject
     ElectrodomesticoRepository elecRepo;
 
-    public Response getElecById(UUID id){
-        return elecRepo.findByIdOptional(id).map(item -> Response.ok(item).build()).orElse(Response.status(Response.Status.NOT_FOUND).build());
+    public Electrodomestico getElecById(UUID id){
+        return elecRepo.findByIdOptional(id)
+            .orElseThrow(() -> new NotFoundException("Ese electrodomestico no existe"));
     }
 
 
@@ -62,15 +64,15 @@ public class ElectrodomesticoService {
 
 
         if (marca != null && !marca.isEmpty()) {
-            query.append(" AND marca = :marca");
+            query.append(" AND lower(marca) = lower(:marca)");
             params.and("marca", marca);
         }
         if (modelo != null && !modelo.isEmpty()) {
-            query.append(" AND modelo LIKE :modelo"); 
+            query.append(" AND lower(modelo) LIKE lower(:modelo)"); 
             params.and("modelo", "%" + modelo + "%");
         }
         if (categoria != null && !categoria.isEmpty()) {
-            query.append(" AND categoria = :categoria");
+            query.append(" AND lower(categoria) = lower(:categoria)");
             params.and("categoria", categoria);
         }
 

@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.synapse.dto.ElectrodomesticoDTO;
 import com.synapse.dto.PagedResponseDTO;
+import com.synapse.model.Electrodomestico;
 import com.synapse.repository.ManualRepository;
 import com.synapse.service.ElectrodomesticoService;
 
@@ -46,6 +47,8 @@ public class CatalogResource {
     @GET
     @Path("/{id}")
     public Response getById(@PathParam("id") UUID id){
-        return electServ.getElecById(id);
+        Electrodomestico elec = electServ.getElecById(id);
+        ElectrodomesticoDTO dto = electServ.toDTO(elec);
+        return Response.ok(dto).build();
     }
 }

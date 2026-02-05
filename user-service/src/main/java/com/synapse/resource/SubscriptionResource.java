@@ -1,5 +1,6 @@
 package com.synapse.resource;
 
+import java.rmi.server.UID;
 import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -56,14 +57,12 @@ public class SubscriptionResource {
     @POST
     @Path("/change-plan")
     public Response changePlan(@QueryParam("planName") String planName) {
-        // Aquí sacamos el ID directamente del token para que sea imposible de hackear
         UUID userId = UUID.fromString(jwt.getSubject());
+    
+   
+        subscriptionService.updateUserPlan(userId, planName);
         
-        UserProfile profile = userRepo.findById(userId)
-        .orElseThrow(() -> new NotFoundException("Usuario no encontrado en el sistema."));
-
-        subscriptionService.createNewSubscription(profile, planName);
-        return Response.ok().entity("Plan actualizado. Ahora eres un Giga-Chad " + planName).build();
+        return Response.ok().entity("Plan actualizado a " + planName).build();
     }
 
     private boolean isOwner(UUID userId) {
@@ -74,7 +73,6 @@ public class SubscriptionResource {
         return UserSubscriptionStatusDTO.builder()
                 .planName(sub.getPlan().getName())
                 .status(sub.getStatus().name())
-                .expiresAt(sub.getEndDate() != null ? sub.getEndDate().toString() : "NEVER")
                 .build();
     }
 }

@@ -3,7 +3,11 @@ package com.synapse.resource;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
 import com.synapse.dto.CambioDeContrasenia;
+import com.synapse.dto.LoginRequest;
+import com.synapse.dto.RegisterRequest;
 import com.synapse.model.Account;
 import com.synapse.services.AccountService;
 
@@ -27,27 +31,30 @@ public class AccountResource {
     @Inject
     AccountService accServ;
 
+    @Inject
+    JsonWebToken jwt; //Auto inyecta el Token que venga con cada peticion
+
     @POST
     @Path("/register")
-    public Response register(@Valid Account acc){
-        Account accToCreate = accServ.register(acc);
-
+    public Response register(@Valid RegisterRequest req){
+        Account accToCreate = accServ.register(req);
         return Response.status(Response.Status.CREATED).entity(accToCreate).build();
     }
 
     @POST
     @Path("/login")
-    public Response login(Account acc){
-        String tok = accServ.logIn(acc.getEmail(), acc.getPassword());
+    public Response login(@Valid LoginRequest req){
+        String tok = accServ.logIn(req.getEmail(), req.getPassword());
 
         return Response.ok(Map.of("token", tok)).build();
     }
 
     @PATCH
-    @Path("/change-password/{id}")
+    @Path("/change-password")
     @Authenticated
-    public Response changePassword(@PathParam("id") UUID id, @Valid CambioDeContrasenia data){
-        accServ.cambiarContrasenia(id, data.oldPassword, data.newPassword);
+    public Response changePassword(@Valid CambioDeContrasenia data){
+         String idTok = jwt.getSubject();
+        accServ.cambiarContrasenia(UUID.fromString(idTok), data.oldPassword, data.newPassword);
         return Response.noContent().build();
     }
 }

@@ -18,6 +18,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class ManualService {
@@ -35,7 +36,7 @@ public class ManualService {
         Electrodomestico e = elecRepo.findById(UUID.fromString(catalogId));
 
         if (e == null) 
-            throw new RuntimeException("Ese electrodoméstico no existe");
+            throw new NotFoundException("Ese electrodoméstico no existe");
 
 
         String fileName = UUID.randomUUID().toString() + "_" + file.fileName();

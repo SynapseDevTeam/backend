@@ -15,6 +15,7 @@ import com.synapse.repository.UserProfileRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
@@ -31,20 +32,16 @@ public class SubscriptionService{
     @Transactional
     public Subscription createNewSubscription(UserProfile profile, String planName){
 
-        Plan newPlan = planRepo.findByName(planName);
-        if (newPlan == null) throw new NotFoundException("Ese plan no existe.");
+        Plan newPlan = planRepo.findByName(planName).orElseThrow(() -> new NotFoundException("Plan no encontrado."));
 
         subscriptionRepo.findActiveByUser(profile.getId()).ifPresent(oldSub -> {
-            oldSub.setStatus(SubscriptionStatus.CANCELLED); // O EXPIRED
-            oldSub.setEndDate(LocalDateTime.now()); 
+            oldSub.setStatus(SubscriptionStatus.CANCELLED);
             });
 
         Subscription newSub = Subscription.builder()
             .user(profile)
             .plan(newPlan)
             .status(SubscriptionStatus.ACTIVE)
-            .startDate(LocalDateTime.now())
-            .endDate(LocalDateTime.now().plusMonths(1))
             .build();
         
         subscriptionRepo.persist(newSub);
@@ -54,6 +51,28 @@ public class SubscriptionService{
 
     public Optional<Subscription> findActiveSubscription(UUID userId) {
         return subscriptionRepo.findActiveByUser(userId);
+    }
+
+    public void updateUserPlan(UUID userId, String planName) {
+        UserProfile profile = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException("Usuario no encontrado."));
+
+        Plan newPlan = planRepo.findByName(planName)
+            .orElseThrow(() -> new BadRequestException("Ese plan no existe, no me seas delulu"));
+        
+        Subscription sub = profile.getSubscription();
+
+        if (sub == null) {
+            sub = Subscription.builder()
+                    .user(profile)
+                    .plan(newPlan)
+                    .status(SubscriptionStatus.ACTIVE)
+                    .build();
+            profile.setSubscription(sub);
+        } else {
+            sub.setPlan(newPlan);
+            sub.setStatus(SubscriptionStatus.ACTIVE);
+        }
     }
     
 }

@@ -3,10 +3,16 @@ package com.synapse.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.synapse.dto.ProfileInitializedEvent;
+import com.synapse.model.Plan;
+import com.synapse.model.Subscription;
+import com.synapse.model.SubscriptionStatus;
 import com.synapse.model.UserProfile;
 import com.synapse.repository.PlanRepository;
 import com.synapse.repository.UserProfileRepository;
 
+import io.smallrye.reactive.messaging.annotations.Channel;
+import io.smallrye.reactive.messaging.annotations.Emitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -23,14 +29,37 @@ public class UserProfileService{
     @Inject 
     UserProfileRepository userRepo;
 
+    @Inject
+    @Channel("profile-out")
+    Emitter<ProfileInitializedEvent> profileEmiter;
+
     @Transactional
     public void createNewUser(UUID userId){
+        if (userRepo.findById(userId).isPresent()) {
+            return; 
+        }
+
+        Plan freePlan = planRepo.findByName("FREE")
+                .orElseThrow(() -> new NotFoundException("¡Bofetón! El plan FREE no existe en la DB"));
+
         UserProfile profile = UserProfile.builder()
                 .id(userId)
+                .fullName("Nuevo Usuario")
                 .build();
+
+        Subscription sub = Subscription.builder()
+                .user(profile)
+                .plan(freePlan)
+                .status(SubscriptionStatus.ACTIVE)
+                .build();
+
+        profile.setSubscription(sub);
+
         userRepo.persist(profile);
 
-        subscriptionService.createNewSubscription(profile, "FREE");
+        ProfileInitializedEvent event = new ProfileInitializedEvent(userId, profile.getFullName());
+ 
+        profileEmiter.send(event);
     }
 
     @Transactional

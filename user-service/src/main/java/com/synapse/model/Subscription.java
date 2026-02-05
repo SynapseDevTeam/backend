@@ -13,7 +13,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,21 +30,16 @@ import lombok.Setter;
 @Builder
 public class Subscription {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "user_id")
     private UUID id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+
+    @OneToOne
+    @MapsId 
+    @JoinColumn(name = "user_id")
     private UserProfile user;
 
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
-
-    @Column(name = "start_date")
-    private LocalDateTime startDate = LocalDateTime.now();
-
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "plan_id")

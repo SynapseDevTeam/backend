@@ -7,6 +7,23 @@ spring:
 
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:3000" # Web
+              - "capacitor://localhost"      # App Móvil (iOS)
+              - "http://localhost"           # App Móvil (Android / Web)
+              - "ionic://localhost"          # App Móvil (Ionic)
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
       server:
         webmvc:
           routes:
@@ -29,7 +46,13 @@ spring:
             uri: http://home-service:8080
             predicates:
               - Path=/home/**
+
           - id: user-service
             uri: http://user-service:8080
             predicates:
-            - Path=/user/**
+            - Path=/profiles/**
+
+          - id: subscription-service
+            uri: http://user-service:8080
+            predicates:
+            - Path=/subscriptions/**

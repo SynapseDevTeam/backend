@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import com.synapse.dto.RegisterRequest;
 import com.synapse.dto.UserCreatedEvent;
 import com.synapse.model.Account;
 import com.synapse.repository.AccountRepository;
@@ -30,25 +31,24 @@ public class AccountService {
     JwtUtils jwtUtils;
 
     @Inject
-    JsonWebToken jwt; //Auto inyecta el Token que venga con cada peticion
-
-    @Inject
     @Channel("user-created")
     Emitter<UserCreatedEvent> userEmitter;
 
     @Transactional
-    public Account register(Account acc){
-        String eamilLimpio = acc.getEmail().trim().toLowerCase();
+    public Account register(RegisterRequest req){
+        String emailLimpio = req.getEmail().trim().toLowerCase();
 
 
-        if(accRepo.findByEmail(eamilLimpio).isPresent()) 
+        if(accRepo.findByEmail(emailLimpio).isPresent()) 
             throw new WebApplicationException("Email ya en uso", 409);
-        if(accRepo.findByUsername(eamilLimpio).isPresent())
+        if(accRepo.findByUsername(req.getUsername()).isPresent())
             throw new WebApplicationException("Nombre de usuario ya en uso", 409);
 
+        Account acc = new Account();
+        acc.setUsername(req.getUsername());
 
-        acc.setPassword(passUtils.hashPassword(acc.getPassword()));
-        acc.setEmail(eamilLimpio);
+        acc.setPassword(passUtils.hashPassword(req.getPassword()));
+        acc.setEmail(emailLimpio);
 
         accRepo.persist(acc);
 
@@ -72,11 +72,6 @@ public class AccountService {
     
     @Transactional
     public void cambiarContrasenia(UUID id, String old, String next){
-        String idTok = jwt.getClaim("accountId");
-
-        if(idTok == null || !id.equals(UUID.fromString(idTok)))
-            throw new WebApplicationException("No puedes cambiar la contrasenia de otra persona", 403);
-
         Account acc = accRepo.findById(id);
         
         if(acc == null || !passUtils.verificarPassword(old, acc.getPassword()))
