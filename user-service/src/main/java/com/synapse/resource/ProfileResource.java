@@ -1,5 +1,6 @@
 package com.synapse.resource;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -9,11 +10,13 @@ import com.synapse.model.UserProfile;
 import com.synapse.service.UserProfileService;
 
 import io.quarkus.security.Authenticated;
+import io.vertx.mutiny.ext.web.FileUpload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -68,5 +71,20 @@ public class ProfileResource {
                 .address(p.getAddress())
                 .planName(p.getSubscription() != null ? p.getSubscription().getPlan().getName() : "NONE")
                 .build();
+    }
+
+    @POST
+    @Path("/photo-profile")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response changeProfilePhoto(FileUpload f){
+
+        UUID userId = UUID.fromString(jwt.getSubject());
+
+        try {
+            String path = profileService.saveProfilePhoto(f, userId);
+            return Response.ok(path).build();
+        } catch (IOException e) {
+            return Response.status(500).entity("Error al guardar la foto").build();
+        }
     }
 }

@@ -65,6 +65,7 @@ services:
       - synapse-net
     volumes:
       - ./manuals_storage:/deployments/uploads
+      - ./devices_storage:/deployments/devicephotos
     depends_on:
       db:
         condition: service_healthy
@@ -116,6 +117,8 @@ services:
       QUARKUS_DATASOURCE_PASSWORD: 1234
       QUARKUS_HIBERNATE_ORM_DATABASE_GENERATION: update
       RABBITMQ_HOST: rabbitmq
+    volumes:
+      - ./profile_storage:/deployments/profilephotos
     depends_on:
       db:
         condition: service_healthy

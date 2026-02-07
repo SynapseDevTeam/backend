@@ -34,4 +34,6 @@ public class UserProfile {
     
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Subscription subscription;
+
+    public String photUrl;
 }

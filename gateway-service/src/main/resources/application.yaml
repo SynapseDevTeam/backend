@@ -12,6 +12,7 @@ spring:
           '[/**]':
             allowedOrigins: 
               - "http://localhost:3000" # Web
+              - "http://localhost:5173"
               - "capacitor://localhost"      # App Móvil (iOS)
               - "http://localhost"           # App Móvil (Android / Web)
               - "ionic://localhost"          # App Móvil (Ionic)

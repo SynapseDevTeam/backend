@@ -1,13 +1,11 @@
 package com.synapse.resource;
 
-import java.rmi.server.UID;
 import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import com.synapse.dto.UserSubscriptionStatusDTO;
 import com.synapse.model.Subscription;
-import com.synapse.model.UserProfile;
 import com.synapse.repository.UserProfileRepository;
 import com.synapse.service.SubscriptionService;
 
@@ -16,7 +14,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;

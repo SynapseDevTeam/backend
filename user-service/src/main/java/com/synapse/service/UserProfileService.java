@@ -1,5 +1,7 @@
 package com.synapse.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +15,7 @@ import com.synapse.repository.UserProfileRepository;
 
 import io.smallrye.reactive.messaging.annotations.Channel;
 import io.smallrye.reactive.messaging.annotations.Emitter;
+import io.vertx.mutiny.ext.web.FileUpload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -78,5 +81,11 @@ public class UserProfileService{
 
     public Optional<UserProfile> getProfile(UUID id){
         return userRepo.findById(id);
+    }
+
+
+    public String saveProfilePhoto(FileUpload f, UUID userId) throws IOException{
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveProfilePhoto'");
     }
 }
