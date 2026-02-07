@@ -1,7 +1,11 @@
 package com.synapse.service;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,10 +16,10 @@ import com.synapse.model.SubscriptionStatus;
 import com.synapse.model.UserProfile;
 import com.synapse.repository.PlanRepository;
 import com.synapse.repository.UserProfileRepository;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import io.smallrye.reactive.messaging.annotations.Channel;
 import io.smallrye.reactive.messaging.annotations.Emitter;
-import io.vertx.mutiny.ext.web.FileUpload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -83,9 +87,29 @@ public class UserProfileService{
         return userRepo.findById(id);
     }
 
-
+    @Transactional
     public String saveProfilePhoto(FileUpload f, UUID userId) throws IOException{
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveProfilePhoto'");
+        UserProfile profile = userRepo.findById(userId).orElseThrow(() -> new NotFoundException("Usuario no encontrado."));
+        
+        String fileName = "profile_" + userId + ".jpg"; 
+        Path destPath = Paths.get("/deployments/profilephotos", fileName);
+
+        Files.createDirectories(destPath.getParent());
+        Files.copy(f.filePath(), destPath, StandardCopyOption.REPLACE_EXISTING);
+
+        profile.setPhotUrl(destPath.toString());
+        userRepo.persist(profile);
+        return "/profiles/photo/" + userId;
+    }
+
+    public File getPhoto(UUID userId) {
+        UserProfile profile = userRepo.findById(userId)
+        .orElseThrow(() -> new NotFoundException("Perfil no encontrado."));
+
+        String path = profile.getPhotUrl();
+
+        File imageFile = new File(path);
+
+        return imageFile;
     }
 }

@@ -1,6 +1,7 @@
 package com.synapse.resource;
 
 
+import java.io.File;
 import java.util.UUID;
 
 import com.synapse.dto.ElectrodomesticoDTO;
@@ -50,5 +51,23 @@ public class CatalogResource {
         Electrodomestico elec = electServ.getElecById(id);
         ElectrodomesticoDTO dto = electServ.toDTO(elec);
         return Response.ok(dto).build();
+    }
+
+    @GET
+    @Path("/photo/{id}")
+    public Response getProfilePhoto(@PathParam("id") UUID id) {
+        
+        File imageFile = electServ.getPhoto(id);
+
+        if (imageFile == null || !imageFile.exists()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        String contentType = imageFile.getName().endsWith(".png") ? "image/png" : "image/jpeg";
+
+        return Response.ok(imageFile)
+                .header("Content-Type", contentType) 
+                .header("Content-Disposition", "inline; filename=\"" + imageFile.getName() + "\"")
+                .build();
     }
 }

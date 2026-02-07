@@ -1,5 +1,6 @@
 package com.synapse.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -10,7 +11,8 @@ import com.synapse.model.UserProfile;
 import com.synapse.service.UserProfileService;
 
 import io.quarkus.security.Authenticated;
-import io.vertx.mutiny.ext.web.FileUpload;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -22,6 +24,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.reactive.RestForm;
 
 @Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
@@ -74,17 +77,35 @@ public class ProfileResource {
     }
 
     @POST
-    @Path("/photo-profile")
+    @Path("/photo")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response changeProfilePhoto(FileUpload f){
+    public Response changeProfilePhoto(@RestForm FileUpload file){
 
         UUID userId = UUID.fromString(jwt.getSubject());
 
         try {
-            String path = profileService.saveProfilePhoto(f, userId);
+            String path = profileService.saveProfilePhoto(file, userId);
             return Response.ok(path).build();
         } catch (IOException e) {
             return Response.status(500).entity("Error al guardar la foto").build();
         }
+    }
+
+    @GET
+    @Path("/photo")
+    public Response getProfilePhoto() {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        File imageFile = profileService.getPhoto(userId);
+
+        if (imageFile == null || !imageFile.exists()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        String contentType = imageFile.getName().endsWith(".png") ? "image/png" : "image/jpeg";
+
+        return Response.ok(imageFile)
+                .header("Content-Type", contentType) 
+                .header("Content-Disposition", "inline; filename=\"" + imageFile.getName() + "\"")
+                .build();
     }
 }

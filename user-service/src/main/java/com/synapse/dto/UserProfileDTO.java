@@ -11,5 +11,5 @@ public class UserProfileDTO {
     private String fullName;
     private String telephone;
     private String address;
-    private String planName; 
+    private String planName;
 }

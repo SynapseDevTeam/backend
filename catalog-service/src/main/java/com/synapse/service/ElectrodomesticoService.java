@@ -1,5 +1,6 @@
 package com.synapse.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,7 +18,6 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class ElectrodomesticoService {
@@ -41,6 +41,7 @@ public class ElectrodomesticoService {
         dto.marca = e.getMarca();
         dto.modelo = e.getModelo();
         dto.categoria = e.getCategoria();
+        dto.price = e.getPrice();
 
         if (e.getManuales() != null) {
         dto.manuales = e.getManuales().stream().map(m -> {
@@ -94,5 +95,16 @@ public class ElectrodomesticoService {
         response.currentPage = page;
         
         return response;
+    }
+
+
+    public File getPhoto(UUID id) {
+        Electrodomestico profile = elecRepo.findById(id);
+
+        String path = profile.getPhotoUrl();
+
+        File imageFile = new File(path);
+
+        return imageFile;
     }
 }

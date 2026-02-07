@@ -7,5 +7,6 @@ public class ElectrodomesticoDTO {
     public String marca;
     public String modelo;
     public String categoria;
+    public Float price;
     public List<ManualDTO> manuales;
 }

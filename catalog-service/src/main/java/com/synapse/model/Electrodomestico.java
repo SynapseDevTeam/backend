@@ -38,6 +38,10 @@ public class Electrodomestico{
     @JsonManagedReference
     private List<Manual> manuales;
 
+    private Float price;
+
+    private String photoUrl;
+
     public List<Manual> getManuales() {
         return manuales;
     }
