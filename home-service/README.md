@@ -6,7 +6,7 @@ El corazón del Gemelo Digital. Gestiona la relación entre el usuario y su casa
 * **MySQL**: Gestión de relaciones Casa <-> Dispositivo.
 
 ### 🎯 Lógica de Negocio
-* **Viviendas**: Creación y gestión de estancias (salón, cocina, etc.).
+* **Viviendas**: Creación y gestión de estancias.
 * **Device Instances**: Vincula dispositivos del catálogo general a la casa específica del usuario. 
 * **Telemetría**: Punto de enlace para futuros datos de sensores.
 
