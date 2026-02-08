@@ -2,8 +2,6 @@ package com.synapse.services;
 
 import java.util.UUID;
 
-import org.eclipse.microprofile.jwt.JsonWebToken;
-
 import com.synapse.dto.RegisterRequest;
 import com.synapse.dto.UserCreatedEvent;
 import com.synapse.model.Account;
@@ -30,6 +28,7 @@ public class AccountService {
     @Inject
     JwtUtils jwtUtils;
 
+    @SuppressWarnings("deprecation")
     @Inject
     @Channel("user-created")
     Emitter<UserCreatedEvent> userEmitter;
