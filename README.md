@@ -55,4 +55,4 @@ El sistema ronea en la nube gracias a **AWS (Amazon Web Services)**:
 * **Docker & Docker Compose** (Contenerización)
 
 ---
-*Desarrollado con ❤️ para el proyecto Synapse - Gemelo Digital 2026.*
+*Desarrollado por Jorge Matias y Alejandro Roca para el proyecto Synapse - 2026.*
