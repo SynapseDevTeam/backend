@@ -1,64 +1,58 @@
-# 🧠 Synapse Backend: El Búnker de Microservicios
+# 🚀 Synapse Ecosystem: Backend & Infrastructure
 
-Bienvenido a **Synapse**, un ecosistema de microservicios diseñado para el control de hogares inteligentes. Aquí no hay espacio para el código **delulu**; todo está blindado, desacoplado y listo para escalar. Si buscas un CRUD de juguete, te has equivocado de repo. Esto es arquitectura **Giga-Chad**.
-
----
+Bienvenido al núcleo de **Synapse**, el ecosistema de Gemelo Digital. Este repositorio contiene la arquitectura de microservicios, la configuración de red y el despliegue en la nube que da vida a las aplicaciones web y móviles.
 
 ## 🏗️ Arquitectura del Sistema
 
-El búnker se divide en mercenarios especializados que se comunican mediante REST (síncrono) y RabbitMQ (asíncrono) para mantener la consistencia total.
+El backend de Synapse no es un bloque monolítico; es un ecosistema distribuido diseñado bajo el patrón de **Microservicios**, lo que nos permite escalar cada parte del búnker de forma independiente.
 
-* **Gateway Service**: La única puerta de entrada (Puerto 8080). Gestiona el CORS y rutea al búnker interno.
-* **Auth-Service**: El cerebro de identidad. Emite tokens **JWT** y gestiona credenciales.
-* **Catalog-Service**: La enciclopedia de dispositivos. Gestiona el catálogo maestro y los manuales técnicos.
-* **User-Service**: Gestión de perfiles y suscripciones. Implementa lógica **1:1** (Suscripción única sin basura de historial).
-* **Home-Service**: El centro de control. Gestiona casas y el inventario de dispositivos por usuario.
+### 🧩 Desglose de Microservicios
+
+1.  **Gateway Service (Spring Cloud Gateway)**: El único punto de entrada público (Puerto 8080). Gestiona el enrutamiento, la seguridad y las políticas de **CORS** centralizadas para permitir la comunicación con el frontend en `localhost`.
+2.  **Auth-Service (Quarkus)**: El portero del búnker. Gestiona el registro, login y la emisión de tokens **JWT** para asegurar que solo los usuarios autorizados accedan a sus datos.
+3.  **Catalog-Service (Quarkus)**: El cerebro del inventario. Administra más de 50 dispositivos, sus especificaciones, precios y sirve los manuales técnicos y fotografías de los productos.
+4.  **User-Service (Quarkus)**: Gestión de perfiles y suscripciones (Free/Premium). Es un servicio reactivo que inicializa perfiles automáticamente al detectar nuevos registros.
+5.  **Home-Service (Quarkus)**: La lógica del hogar inteligente. Vincula a los usuarios con sus viviendas virtuales y sus dispositivos IoT específicos.
+
+
 
 ---
+
+## 📡 Comunicación e Interconectividad
+
+### 🔄 Comunicación Síncrona (REST)
+Utilizamos **HTTP/REST** para operaciones que requieren respuesta inmediata (como el login o la consulta de productos). El Gateway actúa como *Reverse Proxy* redirigiendo el tráfico a través de la red interna de Docker.
+
+### 📬 Comunicación Asíncrona (RabbitMQ)
+Para desacoplar los servicios, utilizamos un **Broker de Mensajería**. 
+* **Ejemplo**: Cuando un usuario se registra en `Auth-Service`, se emite un evento a una cola de RabbitMQ. `User-Service` escucha esta cola y crea el perfil en segundo plano, garantizando que el sistema sea resiliente aunque un servicio esté temporalmente offline.
+
+---
+
+## 💾 Persistencia y Gestión Multimedia
+
+Uno de los puntos clave del proyecto es la gestión de archivos (fotos de perfil y de dispositivos) sin pérdida de datos:
+* **Volúmenes de Docker**: Mapeamos carpetas físicas del servidor AWS (`./profile_storage`) con las carpetas internas de los contenedores (`/deployments/profilephotos`).
+* **Seeding Inteligente**: La base de datos MySQL se autogestiona con scripts de carga que vinculan cada electrodoméstico con su precio y su ruta de imagen dinámica.
+
+
+
+---
+
+## ☁️ Despliegue e Infraestructura
+
+El sistema ronea en la nube gracias a **AWS (Amazon Web Services)**:
+* **Instancia**: Amazon Linux (EC2).
+* **Seguridad**: Configuración de *Security Groups* para blindar todos los puertos excepto el 8080.
+* **Aislamiento**: Todo el ecosistema vive dentro de una red virtual privada de Docker (`synapse-net`), siendo invisible desde el exterior.
 
 ## 🛠️ Stack Tecnológico
-
-| Componente | Tecnología |
-| :--- | :--- |
-| **Lenguaje** | Java 21 (LTS) |
-| **Framework Base** | Quarkus 3.30.6 (Reactivo/Bloqueante) |
-| **Gateway** | Spring Cloud Gateway (MVC) |
-| **Mensajería** | RabbitMQ (AMQP) |
-| **Persistencia** | Hibernate Panache / MySQL |
-| **Seguridad** | JWT (SmallRye / Elytron) |
+* **Java 17 / 21**
+* **Quarkus** (RestEasy Reactive, Hibernate Panache)
+* **Spring Boot** (Cloud Gateway)
+* **MySQL** (Persistencia)
+* **RabbitMQ** (Mensajería)
+* **Docker & Docker Compose** (Contenerización)
 
 ---
-
-## 🗺️ Mapa de Endpoints (Base URL: `http://localhost:8080`)
-
-### 🔑 Auth-Service (`/auth`)
-| Método | Path | Descripción |
-| :--- | :--- | :--- |
-| `POST` | `/auth/register` | Registro de reclutas. Dispara evento a RabbitMQ. |
-| `POST` | `/auth/login` | Validación y entrega de llave (JWT). |
-| `PATCH` | `/auth/change-password` | Cambio de pass blindado (extrae ID del Token). |
-
-### 📖 Catalog-Service (`/catalog` & `/manuals`)
-| Método | Path | Descripción |
-| :--- | :--- | :--- |
-| `GET` | `/catalog/search` | Búsqueda avanzada paginada (`marca`, `modelo`, `categoria`). |
-| `GET` | `/catalog/{id}` | Detalle técnico de un electrodoméstico. |
-| `POST` | `/manuals/upload` | Subida de manuales (Solo ADMIN). |
-| `GET` | `/manuals/{id}` | Descarga de manuales en stream. |
-
-### 👤 User-Service (`/profiles` & `/subscriptions`)
-| Método | Path | Descripción |
-| :--- | :--- | :--- |
-| `GET` | `/profiles/{id}` | Ver perfil y plan actual. |
-| `PATCH` | `/profiles/{id}` | Update de datos (Sin machacar campos ausentes). |
-| `POST` | `/subscriptions/change-plan` | Upgrade/Downgrade de plan inmediato. |
-
-### 🏠 Home-Service (`/home`)
-| Método | Path | Descripción |
-| :--- | :--- | :--- |
-| `POST` | `/home` | Crea una nueva Home vinculada a tu ID. |
-| `GET` | `/home` | Lista de todas tus propiedades. |
-| `POST` | `/home/{homeId}/devices` | Añade un cacharro del catálogo a tu casa. |
-| `PATCH` | `/home/devices/{id}/transfer/{target}` | Mueve dispositivos entre tus casas. |
-
----
+*Desarrollado con ❤️ para el proyecto Synapse - Gemelo Digital 2026.*
