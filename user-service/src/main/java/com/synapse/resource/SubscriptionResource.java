@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import com.synapse.dto.ChangePlanReq;
 import com.synapse.dto.UserSubscriptionStatusDTO;
 import com.synapse.model.Subscription;
 import com.synapse.repository.UserProfileRepository;
@@ -53,13 +54,13 @@ public class SubscriptionResource {
 
     @POST
     @Path("/change-plan")
-    public Response changePlan(String planName) {
+    public Response changePlan(ChangePlanReq req) {
         UUID userId = UUID.fromString(jwt.getSubject());
     
    
-        subscriptionService.updateUserPlan(userId, planName);
+        subscriptionService.updateUserPlan(userId, req.getPlanName());
         
-        return Response.ok().entity("Plan actualizado a " + planName).build();
+        return Response.ok().entity("Plan actualizado a " + req.getPlanName()).build();
     }
 
     private boolean isOwner(UUID userId) {
