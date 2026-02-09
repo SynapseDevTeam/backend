@@ -42,18 +42,18 @@ public class SubscriptionResource {
     public Response getSubcriptionStatus(@PathParam("userId") UUID userId){
         if (!isOwner(userId)) {
             return Response.status(Response.Status.FORBIDDEN)
-                    .entity("No intentes espiar el plan de tus colegas, locotrón")
+                    .entity("No intentes espiar el plan de tus colegas.")
                     .build();
         }
 
         return subscriptionService.findActiveSubscription(userId)
                 .map(sub -> Response.ok(mapToStatusDTO(sub)).build())
-                .orElse(Response.status(Response.Status.NOT_FOUND).entity("No tienes suscripción activa, gordo").build());
+                .orElse(Response.status(Response.Status.NOT_FOUND).entity("No tienes suscripción activa.").build());
     }
 
     @POST
     @Path("/change-plan")
-    public Response changePlan(@QueryParam("planName") String planName) {
+    public Response changePlan(String planName) {
         UUID userId = UUID.fromString(jwt.getSubject());
     
    

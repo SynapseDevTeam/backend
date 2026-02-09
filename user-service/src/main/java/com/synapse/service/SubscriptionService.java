@@ -53,6 +53,7 @@ public class SubscriptionService{
         return subscriptionRepo.findActiveByUser(userId);
     }
 
+    @Transactional
     public void updateUserPlan(UUID userId, String planName) {
         UserProfile profile = userRepo.findById(userId)
             .orElseThrow(() -> new NotFoundException("Usuario no encontrado."));

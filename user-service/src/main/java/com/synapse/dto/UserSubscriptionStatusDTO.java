@@ -7,7 +7,4 @@ import lombok.Data;
 public class UserSubscriptionStatusDTO {
     private String planName;
     private String status;
-    private int maxHomes;
-    private int maxDevicesPerHome;
-    private String expiresAt; // O LocalDateTime si prefieres
 }
