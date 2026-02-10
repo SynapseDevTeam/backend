@@ -53,7 +53,7 @@ public class ProfileResource {
 
         if (!isOwner(id)) {
             return Response.status(Response.Status.FORBIDDEN)
-                    .entity("No puedes cambiar nada a tu usuario")
+                    .entity("No puedes cambiar nada a otro")
                     .build();
         }
 

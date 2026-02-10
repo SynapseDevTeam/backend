@@ -27,7 +27,6 @@ import jakarta.ws.rs.core.Response;
 @Path("/home")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed("USER")
 public class HomeResource {
     @Inject
     HomeService homeServ;
