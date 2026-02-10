@@ -24,7 +24,8 @@ public class UserEventConsumer {
     public void onUserCreated(JsonObject json) {
         try {
             UserCreatedEvent event = json.mapTo(UserCreatedEvent.class);
-            profileService.createNewUser(event.getUserId());
+            String name = json.getString("name");
+            profileService.createNewUser(event.getUserId(), name);
         } catch (Exception e) {
             throw new RuntimeException("Error al procesar el alta del usuario.");
         }

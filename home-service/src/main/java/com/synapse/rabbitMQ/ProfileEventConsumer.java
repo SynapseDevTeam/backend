@@ -20,6 +20,5 @@ public class ProfileEventConsumer {
         String name = json.getString("fullName");
 
         homeService.createDefaultHome(ownerId, "Casa de " + name);
-        System.out.println("W: Primera casa creada para " + name);
     }
 }

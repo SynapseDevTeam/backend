@@ -53,6 +53,7 @@ public class AccountService {
 
         userEmitter.send(UserCreatedEvent.builder()
         .userId(acc.getId())
+        .name(acc.getUsername())
         .build());
 
         return acc;

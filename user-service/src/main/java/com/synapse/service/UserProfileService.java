@@ -41,7 +41,7 @@ public class UserProfileService{
     Emitter<ProfileInitializedEvent> profileEmiter;
 
     @Transactional
-    public void createNewUser(UUID userId){
+    public void createNewUser(UUID userId, String name) {
         if (userRepo.findById(userId).isPresent()) {
             return; 
         }
@@ -51,7 +51,7 @@ public class UserProfileService{
 
         UserProfile profile = UserProfile.builder()
                 .id(userId)
-                .fullName("Nuevo Usuario")
+                .fullName(name)
                 .build();
 
         Subscription sub = Subscription.builder()
@@ -64,7 +64,7 @@ public class UserProfileService{
 
         userRepo.persist(profile);
 
-        ProfileInitializedEvent event = new ProfileInitializedEvent(userId, profile.getFullName());
+        ProfileInitializedEvent event = new ProfileInitializedEvent(userId, name);
  
         profileEmiter.send(event);
     }
